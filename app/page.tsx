@@ -3,6 +3,7 @@
 import { useChat } from "ai/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { AvatarFrame, type AvatarState } from "@/components/AvatarFrame";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatMessages } from "@/components/ChatMessages";
@@ -16,11 +17,28 @@ export default function Home() {
 
   const hasConversation = messages.length > 0;
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   let avatarState: AvatarState = "idle";
   if (isLoading) {
     const last = messages[messages.length - 1];
     avatarState = last?.role === "user" ? "thinking" : "speaking";
   }
+
+  const avatarSize = hasConversation
+    ? isMobile
+      ? 72
+      : 96
+    : isMobile
+    ? 148
+    : 220;
 
   return (
     <main className="relative flex min-h-[100dvh] flex-col overflow-hidden">
@@ -41,19 +59,24 @@ export default function Home() {
       <MouseAura />
 
       {/* Top bar */}
-      <div className="relative z-10 flex items-center justify-between px-5 pt-5 text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--fg-dim)] md:px-8 md:pt-6">
-        <div className="flex items-center gap-2.5">
+      <div className="relative z-10 flex items-center justify-between gap-2 px-4 pt-4 text-[10px] font-mono uppercase tracking-[0.18em] text-[var(--fg-dim)] md:px-8 md:pt-6 md:tracking-[0.2em]">
+        <div className="flex min-w-0 items-center gap-2 md:gap-2.5">
           <Image
             src="/brand/logo.png"
             alt="KGT logo"
             width={241}
             height={173}
             priority
-            className="h-7 w-auto rounded-[4px]"
+            className="h-6 w-auto shrink-0 rounded-[4px] md:h-7"
           />
-          <span>Kent Genesis · AI Native Portfolio</span>
+          <span className="truncate">
+            <span className="sm:hidden">Kent Genesis</span>
+            <span className="hidden sm:inline">
+              Kent Genesis · AI Native Portfolio
+            </span>
+          </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <span className="hidden sm:inline">v0.1</span>
           <ThemeToggle />
         </div>
@@ -64,16 +87,13 @@ export default function Home() {
         layout
         className="flex flex-col items-center justify-center px-4"
         animate={{
-          paddingTop: hasConversation ? 16 : 32,
-          paddingBottom: hasConversation ? 8 : 32,
+          paddingTop: hasConversation ? 12 : isMobile ? 16 : 32,
+          paddingBottom: hasConversation ? 8 : isMobile ? 16 : 32,
         }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.div layout>
-          <AvatarFrame
-            state={avatarState}
-            size={hasConversation ? 96 : 220}
-          />
+          <AvatarFrame state={avatarState} size={avatarSize} />
         </motion.div>
 
         <AnimatePresence mode="wait">
@@ -84,15 +104,18 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-8 flex flex-col items-center text-center"
+              className="mt-5 flex flex-col items-center text-center md:mt-8"
             >
-              <h1 className="text-4xl font-medium tracking-tight text-[var(--fg)] md:text-6xl">
+              <h1 className="text-[28px] font-medium leading-[1.1] tracking-tight text-[var(--fg)] md:text-6xl">
                 Hey, I&apos;m Kent Genesis{" "}
-                <span className="inline-block" style={{ filter: "drop-shadow(0 0 20px rgba(255,200,120,0.4))" }}>
+                <span
+                  className="inline-block"
+                  style={{ filter: "drop-shadow(0 0 20px rgba(255,200,120,0.4))" }}
+                >
                   👋
                 </span>
               </h1>
-              <p className="mt-4 max-w-xl text-[15px] text-[var(--fg-muted)] md:text-base">
+              <p className="mt-3 max-w-xl text-[13px] leading-snug text-[var(--fg-muted)] md:mt-4 md:text-base">
                 AI Automation Specialist · Agentic AI-driven Developer
                 <span className="mx-2 text-[var(--fg-dim)]">|</span>
                 Davao del Sur, PH
@@ -102,18 +125,20 @@ export default function Home() {
         </AnimatePresence>
       </motion.section>
 
-      {/* Conversation */}
-      <section className="flex-1 overflow-y-auto pb-40">
+      {/* Conversation — pads bottom so fixed input never covers the last message.
+          When idle, this also reserves the clear zone so the greeting is never
+          obscured by the bottom chip/input stack on short phones. */}
+      <section className="flex-1 overflow-y-auto pb-44 md:pb-40">
         {hasConversation && <ChatMessages messages={messages} isLoading={isLoading} />}
       </section>
 
       {/* Bottom floating zone: chips + input */}
-      <div className="fixed inset-x-0 bottom-0 z-20 pb-4 pt-2 md:pb-6">
+      <div className="fixed inset-x-0 bottom-0 z-20 pb-3 pt-2 md:pb-6">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--bg)] via-[color:var(--bg)]/90 to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[var(--bg)] via-[color:var(--bg)]/90 to-transparent md:h-32"
         />
-        <div className="relative flex flex-col gap-2.5 px-4">
+        <div className="relative flex flex-col gap-2 px-4 md:gap-2.5">
           <SuggestionChips
             visible={!hasConversation && !isLoading}
             onPick={(text) => append({ role: "user", content: text })}
@@ -124,7 +149,7 @@ export default function Home() {
             onSubmit={handleSubmit}
             isLoading={isLoading}
           />
-          <p className="text-center text-[10px] uppercase tracking-[0.18em] text-[var(--fg-dim)]">
+          <p className="text-center text-[9px] uppercase tracking-[0.16em] text-[var(--fg-dim)] md:text-[10px] md:tracking-[0.18em]">
             Streaming via Groq · built with Claude Code
           </p>
         </div>

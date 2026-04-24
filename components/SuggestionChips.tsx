@@ -14,7 +14,7 @@ export function SuggestionChips({
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="flex flex-wrap items-center justify-center gap-2 px-4"
+          className="scrollbar-hide -mx-4 flex snap-x snap-mandatory items-center gap-2 overflow-x-auto px-4 pb-0.5 md:mx-0 md:flex-wrap md:justify-center md:overflow-visible md:px-0 md:pb-0"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 8 }}
@@ -24,7 +24,7 @@ export function SuggestionChips({
             <motion.button
               key={s}
               onClick={() => onPick(s)}
-              className="rounded-full border border-[var(--panel-border)] bg-[var(--panel)] px-4 py-2 text-sm text-[var(--fg-muted)] backdrop-blur-md transition hover:border-[color:var(--accent)]/40 hover:bg-[var(--panel-strong)] hover:text-[var(--fg)] active:scale-[0.98]"
+              className="shrink-0 snap-start whitespace-nowrap rounded-full border border-[var(--panel-border)] bg-[var(--panel)] px-3.5 py-1.5 text-[13px] text-[var(--fg-muted)] backdrop-blur-md transition hover:border-[color:var(--accent)]/40 hover:bg-[var(--panel-strong)] hover:text-[var(--fg)] active:scale-[0.98] md:px-4 md:py-2 md:text-sm"
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}

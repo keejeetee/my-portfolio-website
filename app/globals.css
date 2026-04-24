@@ -173,3 +173,12 @@ textarea {
 .aura-hide-cursor * {
   cursor: none !important;
 }
+
+/* Hide scrollbar but keep scroll behavior (used by mobile suggestion chips row) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
