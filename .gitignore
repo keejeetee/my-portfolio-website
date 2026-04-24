@@ -1,0 +1,18 @@
+node_modules/
+.next/
+out/
+dist/
+.env
+.env.local
+.env.*.local
+.vercel
+next-env.d.ts
+*.log
+.DS_Store
+
+# Build artifacts
+tsconfig.tsbuildinfo
+
+# Source assets (already copied into public/ for serving — keep repo lean)
+brand_assets/
+My resume*.pdf
