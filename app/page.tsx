@@ -2,6 +2,7 @@
 
 import { useChat } from "ai/react";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import { AvatarFrame, type AvatarState } from "@/components/AvatarFrame";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatMessages } from "@/components/ChatMessages";
@@ -41,7 +42,17 @@ export default function Home() {
 
       {/* Top bar */}
       <div className="relative z-10 flex items-center justify-between px-5 pt-5 text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--fg-dim)] md:px-8 md:pt-6">
-        <span>Kent Genesis · AI Native Portfolio</span>
+        <div className="flex items-center gap-2.5">
+          <Image
+            src="/brand/logo.png"
+            alt="KGT logo"
+            width={241}
+            height={173}
+            priority
+            className="h-7 w-auto rounded-[4px]"
+          />
+          <span>Kent Genesis · AI Native Portfolio</span>
+        </div>
         <div className="flex items-center gap-3">
           <span className="hidden sm:inline">v0.1</span>
           <ThemeToggle />
