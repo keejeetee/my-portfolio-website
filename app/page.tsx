@@ -72,14 +72,8 @@ export default function Home() {
     setChatInteractive(hasConversation || y < 480);
   });
 
-  // "Click me" avatar hint — dismissed on first interaction or after 14s
-  const [hintDismissed, setHintDismissed] = useState(false);
-  useEffect(() => {
-    if (hintDismissed || hasConversation) return;
-    const t = window.setTimeout(() => setHintDismissed(true), 14000);
-    return () => window.clearTimeout(t);
-  }, [hintDismissed, hasConversation]);
-  const showHint = !hasConversation && !hintDismissed;
+  // "Click me" avatar hint — always visible
+  const showHint = true;
 
   return (
     <main className="relative flex min-h-[100dvh] flex-col">
@@ -160,11 +154,7 @@ export default function Home() {
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <motion.div layout className="relative">
-            <AvatarFrame
-              state={avatarState}
-              size={avatarSize}
-              onToggle={() => setHintDismissed(true)}
-            />
+            <AvatarFrame state={avatarState} size={avatarSize} />
 
             <AnimatePresence>
               {showHint && (
