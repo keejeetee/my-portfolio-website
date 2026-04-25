@@ -14,7 +14,15 @@ function padFrame(n: number): string {
   return `/avatar-frames/frame_${String(n).padStart(4, "0")}.webp`;
 }
 
-function AvatarFrameImpl({ state = "idle", size = 220 }: { state?: AvatarState; size?: number }) {
+function AvatarFrameImpl({
+  state = "idle",
+  size = 220,
+  onToggle,
+}: {
+  state?: AvatarState;
+  size?: number;
+  onToggle?: () => void;
+}) {
   const reduced = useReducedMotion();
   const imgRef = useRef<HTMLImageElement>(null);
   const [mode, setMode] = useState<"frames" | "photo">("frames");
@@ -71,7 +79,10 @@ function AvatarFrameImpl({ state = "idle", size = 220 }: { state?: AvatarState; 
   const haloOpacity = state === "speaking" ? 0.5 : state === "thinking" ? 0.22 : 0.13;
   const borderRadius = size < 100 ? "14px" : "24px";
 
-  const toggle = () => setMode((m) => (m === "frames" ? "photo" : "frames"));
+  const toggle = () => {
+    setMode((m) => (m === "frames" ? "photo" : "frames"));
+    onToggle?.();
+  };
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();

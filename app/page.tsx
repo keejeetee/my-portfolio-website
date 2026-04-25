@@ -72,6 +72,15 @@ export default function Home() {
     setChatInteractive(hasConversation || y < 480);
   });
 
+  // "Click me" avatar hint — dismissed on first interaction or after 14s
+  const [hintDismissed, setHintDismissed] = useState(false);
+  useEffect(() => {
+    if (hintDismissed || hasConversation) return;
+    const t = window.setTimeout(() => setHintDismissed(true), 14000);
+    return () => window.clearTimeout(t);
+  }, [hintDismissed, hasConversation]);
+  const showHint = !hasConversation && !hintDismissed;
+
   return (
     <main className="relative flex min-h-[100dvh] flex-col">
       {/* Ambient glow */}
@@ -150,8 +159,51 @@ export default function Home() {
           }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          <motion.div layout>
-            <AvatarFrame state={avatarState} size={avatarSize} />
+          <motion.div layout className="relative">
+            <AvatarFrame
+              state={avatarState}
+              size={avatarSize}
+              onToggle={() => setHintDismissed(true)}
+            />
+
+            <AnimatePresence>
+              {showHint && (
+                <motion.div
+                  key="avatar-hint"
+                  initial={{ opacity: 0, scale: 0.8, x: 8, y: 4 }}
+                  animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.18 } }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 220,
+                    damping: 18,
+                    delay: 1.0,
+                  }}
+                  className="pointer-events-none absolute -right-2 -top-3 translate-x-full md:-right-4 md:-top-2"
+                  aria-hidden
+                >
+                  <motion.div
+                    animate={{ y: [0, -3, 0] }}
+                    transition={{
+                      duration: 2.6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="relative flex items-center gap-1.5 rounded-2xl rounded-bl-sm border border-[color:var(--accent)]/40 bg-[var(--panel)] px-3 py-1.5 text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--fg)] shadow-[0_8px_30px_-12px_rgba(var(--accent-glow),0.55)] backdrop-blur-md"
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute -bottom-[6px] left-2 h-3 w-3 rotate-45 border-b border-l border-[color:var(--accent)]/40 bg-[var(--panel)]"
+                    />
+                    <span
+                      className="inline-block h-[6px] w-[6px] animate-pulse rounded-full"
+                      style={{ background: "var(--accent)" }}
+                    />
+                    <span>click me</span>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           <AnimatePresence mode="wait">
