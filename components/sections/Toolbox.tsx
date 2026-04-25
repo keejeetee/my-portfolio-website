@@ -1,53 +1,127 @@
 "use client";
 
 import { motion } from "framer-motion";
+import {
+  Bot,
+  Braces,
+  Database,
+  GitBranch,
+  type LucideIcon,
+  Plug,
+  Sparkles,
+  Webhook,
+} from "lucide-react";
 import { SectionShell } from "./SectionShell";
+
+type Tool = {
+  name: string;
+  /** simple-icons slug (https://simpleicons.org). Rendered as a CSS mask so it
+   *  inherits theme colors and stays visible in light + dark. */
+  slug?: string;
+  /** Fallback when the tool has no canonical brand mark. */
+  Icon?: LucideIcon;
+};
 
 type ToolGroup = {
   label: string;
-  items: string[];
+  items: Tool[];
 };
 
 const GROUPS: ToolGroup[] = [
   {
     label: "AI & Development",
     items: [
-      "Claude Code",
-      "Claude 3.5 Sonnet",
-      "Vibe Coding",
-      "Agent SDK",
-      "Cursor",
+      { name: "Claude Code", slug: "anthropic" },
+      { name: "Claude 3.5 Sonnet", slug: "anthropic" },
+      { name: "Vibe Coding", Icon: Sparkles },
+      { name: "Agent SDK", Icon: Bot },
+      { name: "Cursor", slug: "cursor" },
     ],
   },
   {
     label: "Automation",
-    items: ["n8n", "Zapier", "Make (Integromat)", "GoHighLevel", "Power Automate"],
+    items: [
+      { name: "n8n", slug: "n8n" },
+      { name: "Zapier", slug: "zapier" },
+      { name: "Make (Integromat)", slug: "make" },
+      { name: "GoHighLevel", Icon: GitBranch },
+      { name: "Power Automate", Icon: GitBranch },
+    ],
   },
   {
     label: "Languages & Data",
     items: [
-      "JavaScript",
-      "TypeScript",
-      "SQL",
-      "Google Apps Script",
-      "REST APIs",
-      "Webhooks",
-      "JSON",
+      { name: "JavaScript", slug: "javascript" },
+      { name: "TypeScript", slug: "typescript" },
+      { name: "SQL", Icon: Database },
+      { name: "Google Apps Script", slug: "google" },
+      { name: "REST APIs", Icon: Plug },
+      { name: "Webhooks", Icon: Webhook },
+      { name: "JSON", Icon: Braces },
     ],
   },
   {
     label: "Frameworks & UI",
-    items: ["Next.js", "React", "Tailwind CSS", "Framer Motion"],
+    items: [
+      { name: "Next.js", slug: "nextdotjs" },
+      { name: "React", slug: "react" },
+      { name: "Tailwind CSS", slug: "tailwindcss" },
+      { name: "Framer Motion", slug: "framer" },
+    ],
   },
   {
     label: "Data & Storage",
-    items: ["Google Sheets", "Airtable", "Notion", "Postgres"],
+    items: [
+      { name: "Google Sheets", slug: "googlesheets" },
+      { name: "Airtable", slug: "airtable" },
+      { name: "Notion", slug: "notion" },
+      { name: "Postgres", slug: "postgresql" },
+    ],
   },
   {
     label: "Comms & Delivery",
-    items: ["WordPress", "Slack", "Twilio", "SendGrid", "Buffer"],
+    items: [
+      { name: "WordPress", slug: "wordpress" },
+      { name: "Slack", slug: "slack" },
+      { name: "Twilio", slug: "twilio" },
+      { name: "SendGrid", slug: "sendgrid" },
+      { name: "Buffer", slug: "buffer" },
+    ],
   },
 ];
+
+function ToolLogo({ tool }: { tool: Tool }) {
+  if (tool.slug) {
+    const url = `https://cdn.simpleicons.org/${tool.slug}`;
+    return (
+      <span
+        aria-hidden
+        className="block h-[15px] w-[15px] shrink-0 bg-[var(--fg-muted)] transition-colors duration-200 group-hover:bg-[color:var(--accent)]"
+        style={{
+          WebkitMaskImage: `url(${url})`,
+          maskImage: `url(${url})`,
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+          maskPosition: "center",
+          WebkitMaskSize: "contain",
+          maskSize: "contain",
+        }}
+      />
+    );
+  }
+  if (tool.Icon) {
+    const Icon = tool.Icon;
+    return (
+      <Icon
+        aria-hidden
+        className="h-[15px] w-[15px] shrink-0 text-[var(--fg-muted)] transition-colors duration-200 group-hover:text-[color:var(--accent)]"
+        strokeWidth={1.6}
+      />
+    );
+  }
+  return null;
+}
 
 export function Toolbox() {
   return (
@@ -84,10 +158,11 @@ export function Toolbox() {
               <ul className="flex flex-wrap gap-1.5">
                 {g.items.map((item) => (
                   <li
-                    key={item}
-                    className="rounded-md border border-[var(--panel-border)] bg-[var(--panel)] px-2.5 py-1 text-[12.5px] text-[var(--fg)] transition-colors hover:border-[color:var(--accent)]/40 hover:bg-[var(--panel-strong)]"
+                    key={item.name}
+                    className="group flex items-center gap-2 rounded-md border border-[var(--panel-border)] bg-[var(--panel)] px-2.5 py-1.5 text-[12.5px] text-[var(--fg)] transition-colors hover:border-[color:var(--accent)]/40 hover:bg-[var(--panel-strong)]"
                   >
-                    {item}
+                    <ToolLogo tool={item} />
+                    <span>{item.name}</span>
                   </li>
                 ))}
               </ul>
