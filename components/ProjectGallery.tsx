@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { Maximize2, X } from "lucide-react";
 import Image from "next/image";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { PROJECTS, type Project } from "@/lib/projects";
@@ -133,9 +133,15 @@ function ProjectModal({
   project: Project;
   onClose: () => void;
 }) {
+  const [zoomed, setZoomed] = useState(false);
+  const isImage = project.media.kind === "image";
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (zoomed) setZoomed(false);
+        else onClose();
+      }
     };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -144,7 +150,7 @@ function ProjectModal({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [onClose]);
+  }, [onClose, zoomed]);
 
   const stack = project.stack.split("·").map((s) => s.trim()).filter(Boolean);
 
@@ -188,14 +194,25 @@ function ProjectModal({
                 className="absolute inset-0 h-full w-full object-contain md:object-cover"
               />
             ) : (
-              <Image
-                src={project.media.src}
-                alt=""
-                fill
-                sizes="(max-width: 768px) 100vw, 58vw"
-                className="object-contain md:object-cover"
-                priority
-              />
+              <button
+                type="button"
+                onClick={() => setZoomed(true)}
+                className="group absolute inset-0 block cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]/60"
+                aria-label="View full image"
+              >
+                <Image
+                  src={project.media.src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 58vw"
+                  className="object-contain md:object-cover"
+                  priority
+                />
+                <span className="pointer-events-none absolute left-3 top-3 flex items-center gap-1.5 rounded-full border border-[var(--panel-border)] bg-[color:var(--bg)]/80 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--fg)] opacity-80 backdrop-blur transition-all group-hover:-translate-y-[1px] group-hover:opacity-100">
+                  <Maximize2 className="h-3 w-3" strokeWidth={2} />
+                  <span>View full</span>
+                </span>
+              </button>
             )}
           </div>
         </div>
@@ -249,6 +266,68 @@ function ProjectModal({
           </div>
         </div>
       </motion.div>
+
+      <AnimatePresence>
+        {zoomed && isImage && (
+          <motion.div
+            key="image-lightbox"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setZoomed(false);
+            }}
+            className="fixed inset-0 z-[80] flex cursor-zoom-out items-center justify-center p-4 md:p-10"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${project.title} — full image`}
+          >
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-black/85 backdrop-blur-md"
+            />
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoomed(false);
+              }}
+              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur transition-colors hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+              aria-label="Close full image"
+            >
+              <X className="h-4 w-4" strokeWidth={2} />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.97, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 24 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative z-[1] flex h-full w-full items-center justify-center"
+            >
+              <div className="relative h-full w-full">
+                <Image
+                  src={project.media.src}
+                  alt={project.title}
+                  fill
+                  sizes="100vw"
+                  className="select-none object-contain"
+                  priority
+                  draggable={false}
+                />
+              </div>
+            </motion.div>
+
+            <span className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-mono uppercase tracking-[0.22em] text-white/60">
+              Esc · click to close
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
