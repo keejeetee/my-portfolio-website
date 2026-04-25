@@ -101,10 +101,10 @@ function MouseAuraImpl() {
         animate={{ opacity: active ? 1 : 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        <Blob size={360} sx={x1} sy={y1} bg={blob(1, "var(--aura-alpha-strong)")} breathe={[1, 1.08, 0.96, 1]} dur={5.5} />
-        <Blob size={320} sx={x2} sy={y2} bg={blob(2)} breathe={[1, 0.94, 1.1, 1]} dur={6.3} />
-        <Blob size={280} sx={x3} sy={y3} bg={blob(3)} breathe={[1, 1.12, 0.9, 1]} dur={7.2} />
-        <Blob size={240} sx={x4} sy={y4} bg={blob(4)} breathe={[1, 0.92, 1.08, 1]} dur={8.1} />
+        <Blob size={220} sx={x1} sy={y1} bg={blob(1, "var(--aura-alpha-strong)")} breathe={[1, 1.08, 0.96, 1]} dur={5.5} />
+        <Blob size={195} sx={x2} sy={y2} bg={blob(2)} breathe={[1, 0.94, 1.1, 1]} dur={6.3} />
+        <Blob size={170} sx={x3} sy={y3} bg={blob(3)} breathe={[1, 1.12, 0.9, 1]} dur={7.2} />
+        <Blob size={145} sx={x4} sy={y4} bg={blob(4)} breathe={[1, 0.92, 1.08, 1]} dur={8.1} />
       </motion.div>
 
       {/* Click splashes — liquid ripples */}
