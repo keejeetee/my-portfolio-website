@@ -29,7 +29,7 @@ export function CalendlyBadge() {
         onLoad={() => {
           window.Calendly?.initBadgeWidget({
             url: "https://calendly.com/bjtenebro/ai-automation-lead-generation",
-            text: "Schedule time with me",
+            text: "Book a call",
             color: "#0069ff",
             textColor: "#ffffff",
             branding: true,
